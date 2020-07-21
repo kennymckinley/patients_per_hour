@@ -1,24 +1,23 @@
 USE EMTCQIData
 
-declare @start date
-declare @end date
-
-set @start = '01/01/2019'
-set @end = '01/01/2020'
+declare @start date = '01/01/2019'
+declare @end date = '01/01/2020'
+declare @fin int = 54738526173
+declare @mrn = 738526173
 
 select distinct
-tat.PATIENT_FIN + 54738526173 as PT_FIN_SCRAMBLED
-, tat.PATIENT_MRN + 738526173 as PT_MRN_SCRAMBLED
+tat.PATIENT_FIN + @fin as PT_FIN_SCRAMBLED
+, tat.PATIENT_MRN + @mrn as PT_MRN_SCRAMBLED
 , tat.CHECKIN_DATE_TIME
 , tat.TRACK_GROUP
 , year (tat.checkin_date_time) Visit_year
 , month (tat.checkin_date_time) Visit_month
 , datepart (week, tat.checkin_date_time) Visit_week
-, datepart (DAYOFYEAR, tat.checkin_date_time) Visit_day_of_year
+, datepart (DAYOFYEAR, tat.checkin_date_time) Visit_day_of_year--don't you want weekday here rather than day of year; why day of year?
 , datepart (hour, tat.checkin_date_time) Visit_hour
 , Left(tat.PT_ACUITY,1) ESI
-, covid_pcr
-, covid_positive
+, labs_covid_pcr.covid_pcr --be explicit about where you're getting your variables
+, labs_covid_pos.covid_positive --be explicit about where you're getting your variables
 
 from ed_tat_master tat
 
