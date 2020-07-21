@@ -1,0 +1,42 @@
+USE EMTCQIData
+
+declare @start date
+declare @end date
+
+set @start = '01/01/2019'
+set @end = '01/01/2020'
+
+select distinct
+tat.PATIENT_FIN + 54738526173 as PT_FIN_SCRAMBLED
+, tat.PATIENT_MRN + 738526173 as PT_MRN_SCRAMBLED
+, tat.CHECKIN_DATE_TIME
+, tat.TRACK_GROUP
+, year (tat.checkin_date_time) Visit_year
+, month (tat.checkin_date_time) Visit_month
+, datepart (week, tat.checkin_date_time) Visit_week
+, datepart (DAYOFYEAR, tat.checkin_date_time) Visit_day_of_year
+, datepart (hour, tat.checkin_date_time) Visit_hour
+, Left(tat.PT_ACUITY,1) ESI
+, covid_pcr
+, covid_positive
+
+from ed_tat_master tat
+
+LEFT OUTER JOIN
+(
+SELECT DISTINCT PT_FIN, covid_pcr = 1
+FROM COVID_Labs
+WHERE RESULT_MNEMONIC LIKE '%SARS CoV2 PCR%' 
+)
+labs_covid_pcr on tat.patient_fin = labs_covid_pcr.pt_fin
+
+LEFT OUTER JOIN
+(
+SELECT DISTINCT PT_FIN, covid_positive = 1
+FROM COVID_Labs
+WHERE (RESULT_MNEMONIC LIKE '%SARS CoV2 PCR Result%') AND RESULT LIKE 'DETECTED'
+)
+labs_covid_pos on tat.patient_fin = labs_covid_pos.pt_fin
+
+where tat.CHECKIN_DATE_TIME between @start and @end
+	and tat.TRACK_GROUP = 'ED Tracking Group'
