@@ -1,0 +1,31 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats as st
+import uuid
+
+
+df = pd.read_excel('pph_by_month_pandemic_zerosadded.xlsx', index_col = 0)
+
+#my_list = [df.jan, df.feb, df.mar, df.apr, df.may, df.jun, df.jul, df.aug, df.sep, df.oct, df.nov, df.dec, df.jan_thru_dec]
+my_list = [df.mar, df.apr, df.may, df.jun, df.jul, df.mar_thru_midjul]
+
+for i in my_list:
+
+    final = i
+    finalplot = '2020_PPH_'
+
+    def Stat_90_ile(g):
+        return round(np.percentile(g, 90),2)
+
+    def Stat_99_ile(g):
+        return round(np.percentile(g, 99),2)
+
+    first_title = str(finalplot), 'mean:', round(np.mean(final),2), 'StDev:', round(np.std(final),2), '90_ile:', round(Stat_90_ile(final),2), '99_ile:', round(Stat_99_ile(final),2)
+
+    sns.set_style('darkgrid')
+    sns.distplot(final, bins=10, kde=False)
+    plt.title(first_title)
+    plt.savefig(finalplot+str(uuid.uuid4())+'.png')
+    plt.clf()
