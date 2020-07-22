@@ -1,0 +1,31 @@
+import pandas as pd
+#import os
+
+
+allpatients_pandemic = pd.read_excel('patient_per_hour_pandemic.xlsx')
+allpatients_PREpandemic = pd.read_excel('patient_per_hour_PREpandemic.xlsx')
+
+#have to delete first and third row and create a summation column for the by ESI prior to creating histogram
+
+allpatients_pandemic.fillna(0)
+allpatients_PREpandemic.fillna(0)
+
+"""Create pivot for numbers of patients per hour"""
+table1 = allpatients_pandemic.pivot_table(values=['PT_FIN_SCRAMBLED'], index=['Visit_hour'], columns=['Visit_day_of_year'], aggfunc=pd.Series.nunique)
+table1
+table1.to_excel ('pph_by_day_pandemic.xlsx')
+
+table2 = allpatients_pandemic.pivot_table(values=['PT_FIN_SCRAMBLED'], index=['Date_hour'], columns=['ESI'], aggfunc=pd.Series.nunique)
+table2
+table2.to_excel ('pph_by_ESI_pandemic.xlsx')
+
+
+
+"""Create pivot for numbers of patients per hour"""
+table3 = allpatients_PREpandemic.pivot_table(values=['PT_FIN_SCRAMBLED'], index=['Visit_hour'], columns=['Visit_day_of_year'], aggfunc=pd.Series.nunique)
+table3
+table3.to_excel ('pph_by_day_PREpandemic.xlsx')
+
+table4 = allpatients_PREpandemic.pivot_table(values=['PT_FIN_SCRAMBLED'], index=['Date_hour'], columns=['ESI'], aggfunc=pd.Series.nunique)
+table4
+table4.to_excel ('pph_by_ESI_PREpandemic.xlsx')
